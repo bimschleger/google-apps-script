@@ -86,8 +86,9 @@ function getFormResponseData() {
   
   var name = getFirstName(email);
   
-  Logger.log(typeof start_date);
   createCalendarEvent(start_date, end_date, name);
+  sendEmailToRequestor(name, start_date,end_date);
+  
   
   Logger.log("email: %s, name: %s, start: %s, end: %s", email, name, start_date, end_date);
   
@@ -168,3 +169,71 @@ TODO:
 - encoded link that posts the event ID, gets the title, and removes the "Pending:  "
 
 */
+
+
+/*
+* 
+* Send a confirmation email of the request to the requestor.
+* 
+* @param {string} email - The email address of the person requesting flex time.
+* @param {string} name - The name of the person requesting flex time.
+* @param {Date} start_date - The first date of the Flex time request.
+* @param {Date} end_date - The last date of the Flex time request.
+* 
+*/
+
+function sendEmailToRequestor(name, start_date,end_date) {
+  
+  var email = "bim@arthur.design";
+  
+  var start_date_text = getDateString(start_date);
+  var end_date_text = getDateString(end_date);
+  
+  var title = `Request: ${name} out (${start_date_text} - ${end_date_text})`;
+  
+  var body = `${name} requests the following flex time: ${start_date_text} - ${end_date_text}.`;
+  
+  var options = {
+    
+    //cc: "bim@arthur.design, david@arthur.design"
+    cc: "bim+test@arthur.design"
+  };
+  
+  GmailApp.sendEmail(email, title, body, options)
+  
+};
+
+
+
+/*
+* 
+* Returns a date in MM/DD/YYYY string format
+* 
+* @param {Date} date - A date object to convert into a MM/DD/YYYY string.
+* @return {string} date_string - A MM/DD/YYYY date string.
+* 
+*/
+
+function getDateString(date) {
+  
+  var date_string = date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
+  return date_string;
+  
+};
+
+
+/*
+* 
+* get the URL for the event that was just created.
+* 
+* @param {Date} date - A date object to convert into a MM/DD/YYYY string.
+* @return {string} date_string - A MM/DD/YYYY date string.
+* 
+*/
+
+
+function getEventURL() {
+  
+  //stuff goes here.
+  
+};
