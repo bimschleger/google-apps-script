@@ -86,8 +86,10 @@ function getFormResponseData() {
   
   var name = getFirstName(email);
   
-  createCalendarEvent(start_date, end_date, name);
-  sendEmailToRequestor(name, start_date,end_date);
+  var url = createCalendarEvent(start_date, end_date, name);
+  
+  // TODO: UPDATE SEND EMAIL TO REQUESTOR TO ACCEPT URL AND SEND IN EMAIL
+  // sendEmailToRequestor(email, name, start_date,end_date);
   
   
   Logger.log("email: %s, name: %s, start: %s, end: %s", email, name, start_date, end_date);
@@ -158,6 +160,39 @@ function createCalendarEvent(start_date, end_date, name) {
   var title = "Pending: " + name + " out"
   var event = cal.createAllDayEvent(title, start_date, end_date);
   
+  var eventId = event.getId();
+  
+  var url = createEventUrl(calendarId, eventId)
+  
+  return url;
+  
+}
+
+
+/*
+* 
+* @param {string} calendarId - calendar Id for the Arthur Internal calendar.
+* @param {string} eventId - eventID for the newly-created calendar event.
+* @return {string} url - The encoded edit URL for the newly-created calendar event.
+* 
+*/
+
+function createEventUrl(calendarId, eventId) {
+  
+  var calId = calendarId.split("@group.calendar.google.com")[0] + "@g";
+  var eventId_true = eventId.split("@google.com")[0];
+  var editCalBase = "https://calendar.google.com/calendar/r/eventedit/";
+  
+  var calString = eventId_true + " " + calId;
+  
+  var encoded = Utilities.base64Encode(calString);
+  
+  var url = editCalBase + encoded;
+  
+  return url;
+  
+  
+  
 }
 
 /*
@@ -182,9 +217,7 @@ TODO:
 * 
 */
 
-function sendEmailToRequestor(name, start_date,end_date) {
-  
-  var email = "bim@arthur.design";
+function sendEmailToRequestor(email, name, start_date,end_date) {
   
   var start_date_text = getDateString(start_date);
   var end_date_text = getDateString(end_date);
