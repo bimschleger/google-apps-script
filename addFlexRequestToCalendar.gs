@@ -1,15 +1,11 @@
 /* 
-
-x calendar stuff
-x get arhtur internal calendar id
-x create an event on arthur internal
-x get the event id for the arthur internal event
-x generate a direct url to that event
-
-https://developers.google.com/calendar/v3/reference/events/get#examples
-
-https://stackoverflow.com/questions/53928044/how-do-i-construct-a-link-to-a-google-calendar-event/53928045#53928045
-
+*
+* A straightforward workflow to automate employee time off requests.
+*
+* Get the time off request.
+* Add it to the company calendar.
+* Email the requester and approver(s) with a link to the calendar event.
+* 
 */
 
 
@@ -92,7 +88,7 @@ function getFormResponseData() {
   // Get URL for new flex calendar event.
   var url = createCalendarEvent(start_date, end_date, name);
   
-  sendEmailToRequestor(email, name, start_date,end_date, url);
+  sendEmailTorequester(email, name, start_date,end_date, url);
 }
 
 
@@ -199,7 +195,7 @@ function createEventUrl(calendarId, eventId) {
 
 /*
 * 
-* Send a confirmation email of the request to the requestor.
+* Send a confirmation email of the request to the requester.
 * 
 * @param {string} email - The email address of the person requesting flex time.
 * @param {string} name - The name of the person requesting flex time.
@@ -208,9 +204,9 @@ function createEventUrl(calendarId, eventId) {
 * 
 */
 
-function sendEmailToRequestor(emailAddress, name, start_date, end_date, url) {
+function sendEmailTorequester(emailAddress, name, start_date, end_date, url) {
   
-  // On the form, I ask for the date that the requestor returns to the office.
+  // On the form, I ask for the date that the requester returns to the office.
   // Need to decrement that date by 1 to determine the true time out of office.
   end_date.setDate(end_date.getDate() - 1);
   
