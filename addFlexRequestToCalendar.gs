@@ -210,10 +210,13 @@ function createEventUrl(calendarId, eventId) {
 
 function sendEmailToRequestor(emailAddress, name, start_date, end_date, url) {
   
+  // On the form, I ask for the date that the requestor returns to the office.
+  // Need to decrement that date by 1 to determine the true time out of office.
+  end_date.setDate(end_date.getDate() - 1);
+  
   // Convert dates to strings
   var start_date_text = getDateString(start_date);
   var end_date_text = getDateString(end_date);
-  //TODO decrement the end date by 1 so that the first day oback in the office is now marked as out.
   
   // Generate email title
   var title = "Request: " + name + "out (" + start_date_text + "-" + end_date_text +")";
@@ -231,7 +234,6 @@ function sendEmailToRequestor(emailAddress, name, start_date, end_date, url) {
   // Send the HTML body email via the GmailApp
   GmailApp.sendEmail(emailAddress, title, "", options);
 };
-
 
 
 /*
