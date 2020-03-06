@@ -88,7 +88,6 @@ function getFormResponseData() {
   
   var url = createCalendarEvent(start_date, end_date, name);
   
-  // TODO: UPDATE SEND EMAIL TO REQUESTOR TO ACCEPT URL AND SEND IN EMAIL
   sendEmailToRequestor(email, name, start_date,end_date, url);
   
   
@@ -190,17 +189,6 @@ function createEventUrl(calendarId, eventId) {
 }
 
 /*
-
-TODO:
-
-- email david, myself, and the recipient once the event was created.
-- maybe get fancy with a link to "approve" the flex?
-- encoded link that posts the event ID, gets the title, and removes the "Pending:  "
-
-*/
-
-
-/*
 * 
 * Send a confirmation email of the request to the requestor.
 * 
@@ -211,28 +199,25 @@ TODO:
 * 
 */
 
-function sendEmailToRequestor(email, name, start_date, end_date, url) {
+function sendEmailToRequestor(emailAddress, name, start_date, end_date, url) {
   
   var start_date_text = getDateString(start_date);
   var end_date_text = getDateString(end_date);
   //TODO decrement the end date by 1 so that the first day oback in the office is now marked as out.
   
-  var title = `Request: ${name} out (${start_date_text} - ${end_date_text})`;
+  var title = "Request: " + name + "out (" + start_date_text + "-" + end_date_text +")";
   
-  var body = "";
-  
-  var new_body = `${name},<br><br>We received your request for flex time from ${start_date_text}-${end_date_text}.<br><br><a href = ${url}>View your flex request.</a>`
+  var body = name +",<br><br>We received your request for flex time from "+ start_date_text + "-" + end_date_text + 
+    ".<br><br><a href = '" + url +"'>View your flex request.</a>";
   
   var options = {
-    
-    //cc: "bim@arthur.design, david@arthur.design"
-    cc: "bim+test@arthur.design",
-    htmlBody: new_body
+    cc: "bim@arthur.design", //add David's email.
+    htmlBody: body
   };
     
-  Logger.log(new_body);
+  Logger.log(body);
   
-  //GmailApp.sendEmail(email, title, body, options)
+  GmailApp.sendEmail(emailAddress, title, "", options);
   
 };
 
