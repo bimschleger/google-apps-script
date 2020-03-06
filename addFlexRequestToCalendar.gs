@@ -21,17 +21,22 @@ https://stackoverflow.com/questions/53928044/how-do-i-construct-a-link-to-a-goog
 
 function createForm() {
   
+  // Creates the form
   var form = FormApp.create("Arthur flex time requests");
   
+  // Makes collecting user's email mandatory
   form.setCollectEmail(true);
   
+  // Adds fields to the form
   form.addDateItem()
     .setTitle('When is the first day that you will not be in the office?');
   form.addDateItem()
     .setTitle('When is the first day that you will be back in the office?');
   
+  // Get the URL to the form
   var publicURL = form.getPublishedUrl();
   
+  // Get the ID to the form, used in later steps
   var form_id = form.getId();
 }
 
@@ -152,6 +157,7 @@ function createCalendarEvent(start_date, end_date, name) {
   var calendarId = "arthur.design_8mnrvpkmi1egj95dh1ucrvv5po@group.calendar.google.com"
   var cal = CalendarApp.getCalendarById(calendarId);
   
+  // Create title of calendar event
   var title = "Pending: " + name + " out";
   
   // Create event in Arthur Internal
@@ -177,14 +183,14 @@ function createCalendarEvent(start_date, end_date, name) {
 
 function createEventUrl(calendarId, eventId) {
   
+  // Creating components of the Google Calendar URL
   var calId = calendarId.split("@group.calendar.google.com")[0] + "@g";
   var eventId_true = eventId.split("@google.com")[0];
   var editCalBaseUrl = "https://calendar.google.com/calendar/r/eventedit/";
   
+  // Prepping and encoding the unique calendar event URL
   var calString = eventId_true + " " + calId;
-  
   var encoded = Utilities.base64Encode(calString);
-  
   var url = editCalBaseUrl + encoded;
   
   return url;
@@ -204,24 +210,26 @@ function createEventUrl(calendarId, eventId) {
 
 function sendEmailToRequestor(emailAddress, name, start_date, end_date, url) {
   
+  // Convert dates to strings
   var start_date_text = getDateString(start_date);
   var end_date_text = getDateString(end_date);
   //TODO decrement the end date by 1 so that the first day oback in the office is now marked as out.
   
+  // Generate email title
   var title = "Request: " + name + "out (" + start_date_text + "-" + end_date_text +")";
   
+  // Generate HTML body for the email
   var body = name +",<br><br>We received your request for flex time from "+ start_date_text + "-" + end_date_text + 
     ".<br><br><a href = '" + url +"'>View your flex request.</a>";
   
+  // Include options into the email
   var options = {
-    cc: "bim@arthur.design", //add David's email.
+    cc: "bim@arthur.design, david@arthur.design",
     htmlBody: body
   };
-    
-  Logger.log(body);
   
+  // Send the HTML body email via the GmailApp
   GmailApp.sendEmail(emailAddress, title, "", options);
-  
 };
 
 
