@@ -89,10 +89,7 @@ function getFormResponseData() {
   var url = createCalendarEvent(start_date, end_date, name);
   
   // TODO: UPDATE SEND EMAIL TO REQUESTOR TO ACCEPT URL AND SEND IN EMAIL
-  // sendEmailToRequestor(email, name, start_date,end_date);
-  
-  
-  Logger.log("email: %s, name: %s, start: %s, end: %s", email, name, start_date, end_date);
+  sendEmailToRequestor(email, name, start_date,end_date, url);
   
   
 
@@ -190,9 +187,6 @@ function createEventUrl(calendarId, eventId) {
   var url = editCalBase + encoded;
   
   return url;
-  
-  
-  
 }
 
 /*
@@ -217,22 +211,28 @@ TODO:
 * 
 */
 
-function sendEmailToRequestor(email, name, start_date,end_date) {
+function sendEmailToRequestor(email, name, start_date, end_date, url) {
   
   var start_date_text = getDateString(start_date);
   var end_date_text = getDateString(end_date);
+  //TODO decrement the end date by 1 so that the first day oback in the office is now marked as out.
   
   var title = `Request: ${name} out (${start_date_text} - ${end_date_text})`;
   
-  var body = `${name} requests the following flex time: ${start_date_text} - ${end_date_text}.`;
+  var body = "";
+  
+  var new_body = `${name},<br><br>We received your request for flex time from ${start_date_text}-${end_date_text}.<br><br><a href = ${url}>View your flex request.</a>`
   
   var options = {
     
     //cc: "bim@arthur.design, david@arthur.design"
-    cc: "bim+test@arthur.design"
+    cc: "bim+test@arthur.design",
+    htmlBody: new_body
   };
+    
+  Logger.log(new_body);
   
-  GmailApp.sendEmail(email, title, body, options)
+  //GmailApp.sendEmail(email, title, body, options)
   
 };
 
@@ -251,22 +251,5 @@ function getDateString(date) {
   
   var date_string = date.getMonth()+1 + "/" + date.getDate() + "/" + date.getFullYear();
   return date_string;
-  
-};
-
-
-/*
-* 
-* get the URL for the event that was just created.
-* 
-* @param {Date} date - A date object to convert into a MM/DD/YYYY string.
-* @return {string} date_string - A MM/DD/YYYY date string.
-* 
-*/
-
-
-function getEventURL() {
-  
-  //stuff goes here.
   
 };
