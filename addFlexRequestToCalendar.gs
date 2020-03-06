@@ -1,17 +1,16 @@
 /* 
 
-- calendar stuff
-- get arhtur internal calendar id
-- create an event on arthur internal
-- get the event id for the arthur internal event
-- generate a direct url to that event
+x calendar stuff
+x get arhtur internal calendar id
+x create an event on arthur internal
+x get the event id for the arthur internal event
+x generate a direct url to that event
 
 https://developers.google.com/calendar/v3/reference/events/get#examples
 
 https://stackoverflow.com/questions/53928044/how-do-i-construct-a-link-to-a-google-calendar-event/53928045#53928045
 
 */
-
 
 
 /*
@@ -33,11 +32,7 @@ function createForm() {
   
   var publicURL = form.getPublishedUrl();
   
-  Logger.log("Published URL: " + publicURL);
-  
   var form_id = form.getId();
-  Logger.log(form_id);
-  
 }
 
 
@@ -49,9 +44,11 @@ function createForm() {
 
 function createTriggerOnFormSubmit() {
   
+  // Get the form
   var url = "https://docs.google.com/forms/d/1Pb_y0X7ZB0Os3K8d0byMPGaHZbWQgc1YsTt6PlJQKhI/edit";
   var form = FormApp.openByUrl(url);
   
+  // Create the trigger
   ScriptApp.newTrigger("getFormResponseData")
     .forForm(form)
     .onFormSubmit()
@@ -61,22 +58,25 @@ function createTriggerOnFormSubmit() {
 
 /*
 * 
-* views the initial output for the form.
+* Views the initial output for the form.
 * 
 */
 
 function getFormResponseData() {
   
+  // Get all form resonses.
   var form = FormApp.openById("1Pb_y0X7ZB0Os3K8d0byMPGaHZbWQgc1YsTt6PlJQKhI");
   var formResponses = form.getResponses();
 
-  // Gets the msot recent form submission.
+  // Gets the most recent form submission.
   var recent_response = formResponses[formResponses.length - 1];
   var email = recent_response.getRespondentEmail();
+  var name = getFirstName(email);
   
   // Gets an array of all the answers for a form submission
   var item_responses = recent_response.getItemResponses();
   
+  // Get flex dates as string.
   var start_date_text = item_responses[0].getResponse();
   var end_date_text = item_responses[1].getResponse();
   
@@ -84,14 +84,10 @@ function getFormResponseData() {
   var start_date = new Date(start_date_text + " 00:00:00 GMT-0700");
   var end_date = new Date(end_date_text + " 00:00:00 GMT-0700");
   
-  var name = getFirstName(email);
-  
+  // Get URL for new flex calendar event.
   var url = createCalendarEvent(start_date, end_date, name);
   
   sendEmailToRequestor(email, name, start_date,end_date, url);
-  
-  
-
 }
 
 
@@ -105,6 +101,7 @@ function getMyCalendars() {
   
   var myCalendars = CalendarApp.getAllOwnedCalendars();
   
+  // Cycles through my calendars and gets name and ID
   myCalendars.forEach(function(cal) {
     
     var calName = cal.getName();
@@ -126,6 +123,7 @@ function getMyCalendars() {
 
 function getFirstName(email) {
   
+  // Object with email:name key:value pairs.
   var employees = {
     "bim@arthur.design": "Bim",
     "david@arthur":"David",
@@ -137,7 +135,6 @@ function getFirstName(email) {
   
   var name = employees[email];
   return name;
-  
 }
 
 
@@ -151,22 +148,27 @@ function getFirstName(email) {
 
 function createCalendarEvent(start_date, end_date, name) {
   
+  // Get Arthur Internal calendar
   var calendarId = "arthur.design_8mnrvpkmi1egj95dh1ucrvv5po@group.calendar.google.com"
   var cal = CalendarApp.getCalendarById(calendarId);
-  var title = "Pending: " + name + " out"
+  
+  var title = "Pending: " + name + " out";
+  
+  // Create event in Arthur Internal
   var event = cal.createAllDayEvent(title, start_date, end_date);
   
+  // Construct URL for event that the system created
   var eventId = event.getId();
-  
-  var url = createEventUrl(calendarId, eventId)
+  var url = createEventUrl(calendarId, eventId);
   
   return url;
-  
 }
 
 
 /*
 * 
+* Get the encoded url for the "Flex" calendar event.
+*
 * @param {string} calendarId - calendar Id for the Arthur Internal calendar.
 * @param {string} eventId - eventID for the newly-created calendar event.
 * @return {string} url - The encoded edit URL for the newly-created calendar event.
@@ -177,16 +179,17 @@ function createEventUrl(calendarId, eventId) {
   
   var calId = calendarId.split("@group.calendar.google.com")[0] + "@g";
   var eventId_true = eventId.split("@google.com")[0];
-  var editCalBase = "https://calendar.google.com/calendar/r/eventedit/";
+  var editCalBaseUrl = "https://calendar.google.com/calendar/r/eventedit/";
   
   var calString = eventId_true + " " + calId;
   
   var encoded = Utilities.base64Encode(calString);
   
-  var url = editCalBase + encoded;
+  var url = editCalBaseUrl + encoded;
   
   return url;
 }
+
 
 /*
 * 
